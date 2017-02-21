@@ -1,0 +1,35 @@
+#!/bin/bash
+
+PHP_VERSION="php71"
+SOURCES_PATH="code"
+SCRIPT_FILE="index.php"
+if [ ! -z $1 ]; then
+  SCRIPT_FILE=$1
+
+  if [ ! -z $2 ]; then
+    PHP_VERSION=$2
+
+    if [ ! -z $3 ]; then
+        SOURCES_PATH=$3
+    fi
+  fi
+fi
+
+PHP_IMAGE_PATH="./$PHP_VERSION/Dockerfile"
+
+docker build \
+  --tag php-sandbox \
+  --file $PHP_IMAGE_PATH \
+  .
+
+SOURCES_PATH="$(pwd)/$SOURCES_PATH"
+
+echo ;echo ;echo
+
+docker run --rm -ti \
+  --volume "$SOURCES_PATH:/code" \
+  --workdir "/code" \
+  --name php-sandbox-container php-sandbox \
+  php $SCRIPT_FILE
+
+echo ;echo ;echo
